@@ -6,7 +6,7 @@ type alias Data =
     , last_name : String
     , first_name : String
     , id : String
-    , microToggleOpen : Bool
+    , hiddenToggleOpen : Bool
     }
 
 initDataList : List Data

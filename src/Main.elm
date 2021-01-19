@@ -51,7 +51,7 @@ type alias Model =
     , list_success : String
     , search_toggle : SearchState
     , loading : LoadState
-    , micro_toggle : MenuState
+    , hidden_toggle : MenuState
     , reverse_first_name : ReverseState
     , reverse_last_name : ReverseState
     , reverse_email : ReverseState
@@ -71,14 +71,14 @@ init flags =
     ( { width = 800
       , height = 800
       , viewport = flags
-      , page_data = Paginate.fromList paginate_num initDataList
+      , page_data = Paginate.fromList paginateNum initDataList
       , query = ""
       , data = initDataList
       , parentData = initParentData
       , list_success = ""
       , search_toggle = NO
       , loading = NotLoading
-      , micro_toggle = CLOSED
+      , hidden_toggle = CLOSED
       , reverse_first_name = OFF
       , reverse_last_name = OFF
       , reverse_email = OFF
@@ -134,7 +134,7 @@ type alias Data =
     , last_name : String
     , first_name : String
     , id : String
-    , microToggleOpen : Bool
+    , hiddenToggleOpen : Bool
     }
 
 
@@ -146,7 +146,7 @@ decodeDataValue =
         |> required "last_name" string
         |> required "first_name" string
         |> optional "id" string ""
-        |> optional "microToggleOpen" bool False
+        |> optional "hiddenToggleOpen" bool False
 
 
 decodeSupportValue : Decoder DataSupport
@@ -227,7 +227,7 @@ type Msg
     | Last
     | GoTo Int
     | UpdateList (Result Http.Error String)
-    | ToggleMicro String
+    | ToggleHidden String
     | SearchToggle String
     | DelayButtonSearch String
     | DelaySearch String
@@ -254,19 +254,19 @@ update msg model =
                 parsed_data =
                     decodingData listData
             in
-            ( { model | raw_data = listData, page_data = Paginate.fromList paginate_num parsed_data.data, data = parsed_data.data, parentData = parsed_data, list_success = "Raw data success" }, Cmd.none )
+            ( { model | raw_data = listData, page_data = Paginate.fromList paginateNum parsed_data.data, data = parsed_data.data, parentData = parsed_data, list_success = "Raw data success" }, Cmd.none )
 
         UpdateList (Err e) ->
             ( { model | list_success = "No list data found" }, Cmd.none )
 
         DelayButtonSearch newQuery ->
             ( { model | loading = Loading }
-            , Process.sleep search_button_delay_time |> Task.perform (always (SearchToggle newQuery))
+            , Process.sleep searchButtonDelay |> Task.perform (always (SearchToggle newQuery))
             )
 
         DelaySearch newQuery ->
             ( model
-            , Process.sleep search_delay_time |> Task.perform (always (SetQuery newQuery))
+            , Process.sleep searchDelay |> Task.perform (always (SetQuery newQuery))
             )
 
         SetQuery newQuery ->
@@ -276,10 +276,10 @@ update msg model =
                 , page_data =
                     case model.search_toggle of
                         YES ->
-                            Paginate.fromList paginate_num (List.filter (queryLogic model newQuery) model.data)
+                            Paginate.fromList paginateNum (List.filter (queryLogic model newQuery) model.data)
 
                         NO ->
-                            Paginate.fromList paginate_num (List.filter (queryLogic model newQuery) model.data)
+                            Paginate.fromList paginateNum (List.filter (queryLogic model newQuery) model.data)
               }
             , Cmd.none
             )
@@ -293,7 +293,7 @@ update msg model =
 
                         NO ->
                             YES
-                , page_data = Paginate.fromList paginate_num (List.filter (queryLogic model newQuery) model.data)
+                , page_data = Paginate.fromList paginateNum (List.filter (queryLogic model newQuery) model.data)
                 , loading = NotLoading
               }
             , Cmd.none
@@ -336,7 +336,7 @@ update msg model =
             let
                 sort =
                     if model.reverse_first_name == ON then
-                        Paginate.fromList paginate_num
+                        Paginate.fromList paginateNum
                             (List.reverse
                                 (List.sortBy .first_name
                                     (List.filter (queryLogic model model.query) model.data)
@@ -344,7 +344,7 @@ update msg model =
                             )
 
                     else
-                        Paginate.fromList paginate_num
+                        Paginate.fromList paginateNum
                             (List.sortBy .first_name
                                 (List.filter (queryLogic model model.query) model.data)
                             )
@@ -382,7 +382,7 @@ update msg model =
             let
                 sort =
                     if model.reverse_last_name == ON then
-                        Paginate.fromList paginate_num
+                        Paginate.fromList paginateNum
                             (List.reverse
                                 (List.sortBy .last_name
                                     (List.filter (queryLogic model model.query) model.data)
@@ -390,7 +390,7 @@ update msg model =
                             )
 
                     else
-                        Paginate.fromList paginate_num
+                        Paginate.fromList paginateNum
                             (List.sortBy .last_name
                                 (List.filter (queryLogic model model.query) model.data)
                             )
@@ -426,7 +426,7 @@ update msg model =
             let
                 sort =
                     if model.reverse_email == ON then
-                        Paginate.fromList paginate_num
+                        Paginate.fromList paginateNum
                             (List.reverse
                                 (List.sortBy .email
                                     (List.filter (queryLogic model model.query) model.data)
@@ -434,7 +434,7 @@ update msg model =
                             )
 
                     else
-                        Paginate.fromList paginate_num
+                        Paginate.fromList paginateNum
                             (List.sortBy .email
                                 (List.filter (queryLogic model model.query) model.data)
                             )
@@ -466,11 +466,11 @@ update msg model =
             , Cmd.none
             )
 
-        ToggleMicro item_id ->
+        ToggleHidden item_id ->
             let
                 updateToggle record =
                     if record.id == item_id then
-                        { record | microToggleOpen = not record.microToggleOpen }
+                        { record | hiddenToggleOpen = not record.hiddenToggleOpen }
 
                     else
                         record
@@ -497,7 +497,7 @@ update msg model =
             let
                 sort =
                     if model.reverse_avatar == ON then
-                        Paginate.fromList paginate_num
+                        Paginate.fromList paginateNum
                             (List.reverse
                                 (List.sortBy .avatar
                                     (List.filter (queryLogic model model.query) model.data)
@@ -505,7 +505,7 @@ update msg model =
                             )
 
                     else
-                        Paginate.fromList paginate_num
+                        Paginate.fromList paginateNum
                             (List.sortBy .avatar
                                 (List.filter (queryLogic model model.query) model.data)
                             )
@@ -538,23 +538,19 @@ update msg model =
             )
 
 
+--Query logic
 
-
-search_button_delay_time =
+searchButtonDelay =
     0.0
 
-
-search_delay_time =
+searchDelay =
     0.0
 
-
-search_delay_char =
+searchCharDelay =
     2
 
-
-paginate_num =
+paginateNum =
     20
-
 
 dataGetters =
     [ .avatar
@@ -562,7 +558,6 @@ dataGetters =
     , .last_name
     , .first_name
     ]
-
 
 queryLogic : Model -> String -> Data -> Bool
 queryLogic model str data =
@@ -578,24 +573,19 @@ queryLogic model str data =
     values |> List.map (String.contains query) |> List.foldl (||) False
 
 
-filterAndSortThings : Model -> PaginatedList Data
-filterAndSortThings model =
-    model.page_data
-
-
 
 --VIEW
 
 
 view model =
     layout [ Background.color (rgb255 177 194 222) ] <|
-        table_view model
+        tableView model
 
 
 
 
-table_view : Model -> Element Msg
-table_view model =
+tableView : Model -> Element Msg
+tableView model =
     let
         displayInfoView =
             el
@@ -608,14 +598,14 @@ table_view model =
                 ]
                 (Element.text
                     (String.join " "
-                        [ String.fromInt <| Paginate.currentPage (filterAndSortThings model)
+                        [ String.fromInt <| Paginate.currentPage (model.page_data)
                         , "of"
-                        , String.fromInt <| Paginate.totalPages (filterAndSortThings model)
+                        , String.fromInt <| Paginate.totalPages (model.page_data)
                         ]
                     )
                 )
 
-        button_styling =
+        buttonStyling =
             [ style "font-size" "10px"
             , style "border-color" "#DDDDDD"
             , style "box-shadow" "0px 0px"
@@ -630,7 +620,7 @@ table_view model =
                 []
                 [ Element.html
                     (Html.button
-                        (List.append button_styling
+                        (List.append buttonStyling
                             [ style "border-top-left-radius" "5px"
                             , style "border-bottom-left-radius" "5px"
                             , style "cursor" "pointer"
@@ -638,20 +628,20 @@ table_view model =
                             , style "font-weight" "dark grey"
                             , style "color" "black"
                             , onClick First
-                            , disabled <| Paginate.isFirst (filterAndSortThings model)
+                            , disabled <| Paginate.isFirst (model.page_data)
                             ]
                         )
                         [ Html.text "FIRST" ]
                     )
                 , Element.html
                     (Html.button
-                        (List.append button_styling
+                        (List.append buttonStyling
                             [ style "cursor" "pointer"
                             , style "font-weight" "dark grey"
                             , style "border-width" "0px"
                             , style "color" "black"
                             , onClick Prev
-                            , disabled <| Paginate.isFirst (filterAndSortThings model)
+                            , disabled <| Paginate.isFirst (model.page_data)
                             ]
                         )
                         [ Html.text "PREV" ]
@@ -663,26 +653,26 @@ table_view model =
                 []
                 [ Element.html
                     (Html.button
-                        (List.append button_styling
+                        (List.append buttonStyling
                             [ style "font-weight" "dark grey"
                             , style "border-width" "0px"
                             , style "color" "black"
                             , onClick Next
-                            , disabled <| Paginate.isLast (filterAndSortThings model)
+                            , disabled <| Paginate.isLast (model.page_data)
                             ]
                         )
                         [ Html.text "NEXT" ]
                     )
                 , Element.html
                     (Html.button
-                        (List.append button_styling
+                        (List.append buttonStyling
                             [ style "border-top-right-radius" "5px"
                             , style "border-bottom-right-radius" "5px"
                             , style "border-width" "0px"
                             , style "font-weight" "dark grey"
                             , style "color" "black"
                             , onClick Last
-                            , disabled <| Paginate.isLast (filterAndSortThings model)
+                            , disabled <| Paginate.isLast (model.page_data)
                             ]
                         )
                         [ Html.text "LAST" ]
@@ -704,7 +694,7 @@ table_view model =
                     [ Html.text <| String.fromInt index ]
                 )
 
-        search_button =
+        searchButton =
             let
                 icon =
                     Element.el [ Font.size 14, Background.color (rgb255 67 130 222) ] (text "Search")
@@ -719,7 +709,7 @@ table_view model =
                 ]
                 icon
 
-        erase_button =
+        eraseButton =
             let
                 icon =
                     fa "fas fa-times"
@@ -744,7 +734,7 @@ table_view model =
                             [ alignRight
                             , moveDown 5
                             ]
-                            erase_button
+                            eraseButton
                     , moveUp 2.5
                     ]
                     (Input.text
@@ -768,10 +758,10 @@ table_view model =
                         , label = Input.labelAbove [] (text "")
                         }
                     )
-                , Element.el [ padding 5 ] search_button
+                , Element.el [ padding 5 ] searchButton
                 ]
 
-        page_nav =
+        pageNavigation =
             if List.length (Paginate.page model.page_data) == 0 then
                 Element.el [] Element.none
 
@@ -785,7 +775,7 @@ table_view model =
                     , displayInfoView
                     ]
 
-        responsive_search =
+        responsiveSearch =
             if model.viewport.width <= 700 then
                 Element.column
                     [ centerX, spacing 5 ]
@@ -803,16 +793,16 @@ table_view model =
         , Background.color (rgb255 177 194 222)
         , Font.color (rgb255 57 76 128)
         ]
-        [ responsive_search
+        [ responsiveSearch
         , table model
-        , page_nav
+        , pageNavigation
         ]
 
 
 table : Model -> Element Msg
 table model =
     let
-        sort_icon_first_name =
+        sortIconFirstName =
             if model.reverse_first_name == ON then
                 fa "fas fa-sort-amount-up"
 
@@ -854,25 +844,25 @@ table model =
 
         responsive_columns =
             if model.viewport.width <= 700 then
-                List.take 2 base_columns
+                List.take 2 mainColumns
 
             else
-                base_columns
+                mainColumns
 
-        micro_icon customer =
+        hidden_icon item =
             if model.viewport.width <= 700 then
-                if customer.microToggleOpen == False then
-                    Element.el [ paddingXY 4 2, Events.onClick (ToggleMicro customer.id), Font.color  (rgb255 57 76 128) ] (fa "fas fa-chevron-down")
+                if item.hiddenToggleOpen == False then
+                    Element.el [ paddingXY 4 2, Events.onClick (ToggleHidden item.id), Font.color  (rgb255 57 76 128) ] (fa "fas fa-chevron-down")
 
                 else
-                    Element.el [ paddingXY 4 2, Events.onClick (ToggleMicro customer.id), Font.color  (rgb255 57 76 128) ] (fa "fas fa-chevron-up")
+                    Element.el [ paddingXY 4 2, Events.onClick (ToggleHidden item.id), Font.color  (rgb255 57 76 128) ] (fa "fas fa-chevron-up")
 
             else
                 Element.el [] Element.none
 
-        micro_columns data =
+        hidden_columns data =
             if model.viewport.width <= 700 then
-                if data.microToggleOpen == True then
+                if data.hiddenToggleOpen == True then
                     [ Element.row [ padding 2, width fill, alignBottom ]
                         [ Element.column [ Font.bold, Font.size 13, Font.color (rgb255 102 102 102), paddingXY 1 0 ]
                             [ Element.text "email"
@@ -887,59 +877,55 @@ table model =
             else
                 [ Element.el [] Element.none ]
 
-        micro_column_data customer =
-            if customer.microToggleOpen == True then
+        hidden_column_data item =
+            if item.hiddenToggleOpen == True then
                 Element.column [ padding 2, height (fill |> minimum 16), Font.size 13, Font.color (rgb255 102 102 102), width fill ]
-                    [ Element.text customer.email
-                    , Element.text customer.avatar
+                    [ Element.text item.email
+                    , Element.text item.avatar
                     ]
 
             else
                 Element.el [] Element.none
 
-        base_columns =
-            [ { header = Element.row [ Events.onClick Sort_first_name, Border.widthEach { bottom = 1, left = 0, right = 0, top = 1 }, Border.color (rgb255 231 234 236), paddingEach { top = 8, bottom = 8, left = 0, right = 0 } ] [ Element.el [] <| text "first name  ", sort_icon_first_name ]
+        mainColumns =
+            [ { header = Element.row [ Events.onClick Sort_first_name, Border.widthEach { bottom = 1, left = 0, right = 0, top = 1 }, Border.color (rgb255 231 234 236), paddingEach { top = 8, bottom = 8, left = 0, right = 0 } ] [ Element.el [] <| text "first name  ", sortIconFirstName ]
               , width = fill
               , view =
-                    \customer ->
+                    \item ->
                         Element.column [ spacing 5, height (fill |> minimum 15), Font.light, Font.size 13, Font.color  (rgb255 57 76 128), Border.color (rgb255 231 234 236), paddingEach { top = 8, bottom = 8, left = 0, right = 0 }, Border.widthEach { bottom = 1, left = 0, right = 0, top = 0 } ]
                             (List.concat
                                 [ [ Element.row [ padding 2, spacing 4 ]
-                                        [ micro_icon customer
-                                        , Element.newTabLink []
-                                            { url = "", label = Element.text customer.first_name }
+                                        [ hidden_icon item
+                                        ,  Element.text item.first_name
                                         ]
                                   ]
-                                , micro_columns customer
+                                , hidden_columns item
                                 ]
                             )
               }
             , { header = Element.row [ Events.onClick Sort_last_name, Border.widthEach { bottom = 1, left = 0, right = 0, top = 1 }, Border.color (rgb255 231 234 236), paddingEach { top = 8, bottom = 8, left = 0, right = 0 } ] [ Element.el [] <| text "last name  ", sort_icon_last_name ]
               , width = fill
               , view =
-                    \customer ->
+                    \item ->
                         Element.column [ spacing 4, height (fill |> minimum 15), Font.light, Font.size 13, Font.color (rgb255 57 76 128), Border.color (rgb255 231 234 236), paddingEach { top = 8, bottom = 8, left = 0, right = 0 }, Border.widthEach { bottom = 1, left = 0, right = 0, top = 0 } ]
-                            [ Element.newTabLink [ padding 6 ]
-                                { url = "", label = Element.text customer.last_name }
-                            , micro_column_data customer
+                            [ Element.text item.last_name 
+                            , hidden_column_data item
                             ]
               }
             , { header = Element.row [ Events.onClick Sort_email, Border.widthEach { bottom = 1, left = 0, right = 0, top = 1 }, Border.color (rgb255 231 234 236), paddingEach { top = 8, bottom = 8, left = 0, right = 0 } ] [ Element.el [] <| text "email  ", sort_icon_email ]
               , width = fill
               , view =
-                    \customer ->
+                    \item ->
                         Element.column [ height (fill |> minimum 15), Font.light, Font.size 13, Font.color  (rgb255 57 76 128), Border.color (rgb255 231 234 236), paddingEach { top = 8, bottom = 8, left = 0, right = 0 }, Border.widthEach { bottom = 1, left = 0, right = 0, top = 0 } ]
-                            [ Element.newTabLink []
-                                { url = "", label = Element.text customer.email }
+                            [ Element.text item.email 
                             ]
               }
             , { header = Element.row [ Events.onClick Sort_avatar, Border.widthEach { bottom = 1, left = 0, right = 0, top = 1 }, Border.color (rgb255 231 234 236), paddingEach { top = 8, bottom = 8, left = 0, right = 0 } ] [ Element.el [] <| text "avatar  ", sort_icon_avatar ]
               , width = fill
               , view =
-                    \customer ->
+                    \item ->
                         Element.column [ height (fill |> minimum 15), Font.light, Font.size 13, Font.color (rgb255 57 76 128), Border.color (rgb255 231 234 236), paddingEach { top = 8, bottom = 8, left = 0, right = 0 }, Border.widthEach { bottom = 1, left = 0, right = 0, top = 0 } ]
-                            [ Element.newTabLink []
-                                { url = "", label = Element.text customer.avatar }
+                            [ Element.text item.avatar 
                             ]
               }
             ]
@@ -956,7 +942,7 @@ table model =
         , paddingXY 16 16
         , Border.rounded 6
         ]
-        { data = Paginate.page (filterAndSortThings model)
+        { data = Paginate.page (model.page_data)
         , columns = responsive_columns
         }
 

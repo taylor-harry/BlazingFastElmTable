@@ -201,7 +201,7 @@ decodingData listData =
 
 initDataSupport : DataSupport
 initDataSupport =
-    DataSupport "www.com" "Blah blah"
+    DataSupport "null" "null"
 
 
 initParentData : ParentData
@@ -233,10 +233,10 @@ type Msg
     | DelaySearch String
     | SearchOff
     | KeyDown
-    | Sort_first_name
-    | Sort_last_name
-    | Sort_email
-    | Sort_avatar
+    | SortFirstName
+    | SortLastName
+    | SortEmail
+    | SortAvatar
 
 
 
@@ -332,7 +332,7 @@ update msg model =
         KeyDown ->
             ( model, Process.sleep 0.0 |> Task.perform (always (DelayButtonSearch model.query)) )
 
-        Sort_first_name ->
+        SortFirstName ->
             let
                 sort =
                     if model.reverse_first_name == ON then
@@ -378,7 +378,7 @@ update msg model =
             , Cmd.none
             )
 
-        Sort_last_name ->
+        SortLastName ->
             let
                 sort =
                     if model.reverse_last_name == ON then
@@ -422,7 +422,7 @@ update msg model =
             , Cmd.none
             )
 
-        Sort_email ->
+        SortEmail ->
             let
                 sort =
                     if model.reverse_email == ON then
@@ -493,7 +493,7 @@ update msg model =
             , Cmd.none
             )
 
-        Sort_avatar ->
+        SortAvatar ->
             let
                 sort =
                     if model.reverse_avatar == ON then
@@ -888,7 +888,7 @@ table model =
                 Element.el [] Element.none
 
         mainColumns =
-            [ { header = Element.row [ Events.onClick Sort_first_name, Border.widthEach { bottom = 1, left = 0, right = 0, top = 1 }, Border.color (rgb255 231 234 236), paddingEach { top = 8, bottom = 8, left = 0, right = 0 } ] [ Element.el [] <| text "first name  ", sortIconFirstName ]
+            [ { header = Element.row [ Events.onClick SortFirstName, Border.widthEach { bottom = 1, left = 0, right = 0, top = 1 }, Border.color (rgb255 231 234 236), paddingEach { top = 8, bottom = 8, left = 0, right = 0 } ] [ Element.el [] <| text "first name  ", sortIconFirstName ]
               , width = fill
               , view =
                     \item ->
@@ -903,7 +903,7 @@ table model =
                                 ]
                             )
               }
-            , { header = Element.row [ Events.onClick Sort_last_name, Border.widthEach { bottom = 1, left = 0, right = 0, top = 1 }, Border.color (rgb255 231 234 236), paddingEach { top = 8, bottom = 8, left = 0, right = 0 } ] [ Element.el [] <| text "last name  ", sort_icon_last_name ]
+            , { header = Element.row [ Events.onClick SortLastName, Border.widthEach { bottom = 1, left = 0, right = 0, top = 1 }, Border.color (rgb255 231 234 236), paddingEach { top = 8, bottom = 8, left = 0, right = 0 } ] [ Element.el [] <| text "last name  ", sort_icon_last_name ]
               , width = fill
               , view =
                     \item ->
@@ -912,7 +912,7 @@ table model =
                             , hidden_column_data item
                             ]
               }
-            , { header = Element.row [ Events.onClick Sort_email, Border.widthEach { bottom = 1, left = 0, right = 0, top = 1 }, Border.color (rgb255 231 234 236), paddingEach { top = 8, bottom = 8, left = 0, right = 0 } ] [ Element.el [] <| text "email  ", sort_icon_email ]
+            , { header = Element.row [ Events.onClick SortEmail, Border.widthEach { bottom = 1, left = 0, right = 0, top = 1 }, Border.color (rgb255 231 234 236), paddingEach { top = 8, bottom = 8, left = 0, right = 0 } ] [ Element.el [] <| text "email  ", sort_icon_email ]
               , width = fill
               , view =
                     \item ->
@@ -920,7 +920,7 @@ table model =
                             [ Element.text item.email 
                             ]
               }
-            , { header = Element.row [ Events.onClick Sort_avatar, Border.widthEach { bottom = 1, left = 0, right = 0, top = 1 }, Border.color (rgb255 231 234 236), paddingEach { top = 8, bottom = 8, left = 0, right = 0 } ] [ Element.el [] <| text "avatar  ", sort_icon_avatar ]
+            , { header = Element.row [ Events.onClick SortAvatar, Border.widthEach { bottom = 1, left = 0, right = 0, top = 1 }, Border.color (rgb255 231 234 236), paddingEach { top = 8, bottom = 8, left = 0, right = 0 } ] [ Element.el [] <| text "avatar  ", sort_icon_avatar ]
               , width = fill
               , view =
                     \item ->

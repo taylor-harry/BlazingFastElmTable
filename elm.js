@@ -6208,7 +6208,7 @@ var $author$project$Main$DataSupport = F2(
 	function (url, text) {
 		return {b7: text, ca: url};
 	});
-var $author$project$Main$initDataSupport = A2($author$project$Main$DataSupport, 'www.com', 'Blah blah');
+var $author$project$Main$initDataSupport = A2($author$project$Main$DataSupport, 'null', 'null');
 var $author$project$Main$initParentData = A6($author$project$Main$ParentData, 2, 6, 12, 2, $author$project$Data$initDataList, $author$project$Main$initDataSupport);
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$paginateNum = 20;
@@ -13223,10 +13223,10 @@ var $mdgriffith$elm_ui$Element$spacing = function (x) {
 };
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
-var $author$project$Main$Sort_avatar = {$: 17};
-var $author$project$Main$Sort_email = {$: 16};
-var $author$project$Main$Sort_first_name = {$: 14};
-var $author$project$Main$Sort_last_name = {$: 15};
+var $author$project$Main$SortAvatar = {$: 17};
+var $author$project$Main$SortEmail = {$: 16};
+var $author$project$Main$SortFirstName = {$: 14};
+var $author$project$Main$SortLastName = {$: 15};
 var $author$project$Main$ToggleHidden = function (a) {
 	return {$: 8, a: a};
 };
@@ -13609,7 +13609,7 @@ var $author$project$Main$table = function (model) {
 				$mdgriffith$elm_ui$Element$row,
 				_List_fromArray(
 					[
-						$mdgriffith$elm_ui$Element$Events$onClick($author$project$Main$Sort_first_name),
+						$mdgriffith$elm_ui$Element$Events$onClick($author$project$Main$SortFirstName),
 						$mdgriffith$elm_ui$Element$Border$widthEach(
 						{e: 1, f: 0, g: 0, h: 1}),
 						$mdgriffith$elm_ui$Element$Border$color(
@@ -13672,7 +13672,7 @@ var $author$project$Main$table = function (model) {
 				$mdgriffith$elm_ui$Element$row,
 				_List_fromArray(
 					[
-						$mdgriffith$elm_ui$Element$Events$onClick($author$project$Main$Sort_last_name),
+						$mdgriffith$elm_ui$Element$Events$onClick($author$project$Main$SortLastName),
 						$mdgriffith$elm_ui$Element$Border$widthEach(
 						{e: 1, f: 0, g: 0, h: 1}),
 						$mdgriffith$elm_ui$Element$Border$color(
@@ -13720,7 +13720,7 @@ var $author$project$Main$table = function (model) {
 				$mdgriffith$elm_ui$Element$row,
 				_List_fromArray(
 					[
-						$mdgriffith$elm_ui$Element$Events$onClick($author$project$Main$Sort_email),
+						$mdgriffith$elm_ui$Element$Events$onClick($author$project$Main$SortEmail),
 						$mdgriffith$elm_ui$Element$Border$widthEach(
 						{e: 1, f: 0, g: 0, h: 1}),
 						$mdgriffith$elm_ui$Element$Border$color(
@@ -13766,7 +13766,7 @@ var $author$project$Main$table = function (model) {
 				$mdgriffith$elm_ui$Element$row,
 				_List_fromArray(
 					[
-						$mdgriffith$elm_ui$Element$Events$onClick($author$project$Main$Sort_avatar),
+						$mdgriffith$elm_ui$Element$Events$onClick($author$project$Main$SortAvatar),
 						$mdgriffith$elm_ui$Element$Border$widthEach(
 						{e: 1, f: 0, g: 0, h: 1}),
 						$mdgriffith$elm_ui$Element$Border$color(
